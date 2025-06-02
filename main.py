@@ -22,5 +22,5 @@ if query:
     response = ask(query)
     with st.chat_message("Vita"):
         st.markdown(response)
-        st.image("https://drive.google.com/uc?export=view&id=1QoNIYeK6qcCqmhD0RZUtdsnHyU2qJ-sl", width=300)
+        st.image("https://drive.google.com/uc?export=view&id=1QoNIYeK6qcCqmhD0RZUtdsnHyU2qJ-sl")
     st.session_state.messages.append({"role": "assistant", "content": response})
