@@ -15,12 +15,12 @@ for message in st.session_state.messages:
         st.markdown(message['content'])
 
 if query:
-    with st.chat_message("user", avatar = "https://github.com/ishebee/The-Mismatched-APP/blob/main/avatars/girl.png"):
+    with st.chat_message("user", avatar = "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/blob/main/avatars/girl.png"):
         st.markdown(query)
     st.session_state.messages.append({"role":"user", "content":query})
 
     response = ask(query)
-    with st.chat_message("Vita", avatar = "https://github.com/ishebee/The-Mismatched-APP/blob/main/avatars/boy.png"):
+    with st.chat_message("Vita", avatar = "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/blob/main/avatars/boy.png"):
         st.markdown(response)
         st.image("https://drive.google.com/uc?export=view&id=1QoNIYeK6qcCqmhD0RZUtdsnHyU2qJ-sl")
     st.session_state.messages.append({"role": "assistant", "content": response})
