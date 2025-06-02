@@ -22,5 +22,5 @@ if query:
     response = ask(query)
     with st.chat_message("Vita", avatar = "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/boy.png"):
         st.markdown(response)
-        st.image("https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/Images/january/31.jpg", width = "300")
+        st.image("https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/Images/january/31.jpg", width =300)
     st.session_state.messages.append({"role": "assistant", "content": response})
