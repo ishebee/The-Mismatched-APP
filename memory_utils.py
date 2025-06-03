@@ -2,6 +2,7 @@
 import pandas as pd
 import chromadb
 from chromadb.utils import embedding_functions
+from sentence_transformers import SentenceTransformer
 import os
 
 mem_path = "resources/Memories.csv"
