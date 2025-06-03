@@ -1,8 +1,14 @@
-# memory_utils.py
+import sys
+import os
+try:
+    import pysqlite3
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")  # Force updated SQLite
+except ImportError:
+    print("⚠️ pysqlite3-binary is missing. Install it using `pip install pysqlite3-binary`.")
+
 import pandas as pd
 import chromadb
 from chromadb.utils import embedding_functions
-import os
 
 mem_path = "resources/Memories.csv"
 collection_name = "memories"
