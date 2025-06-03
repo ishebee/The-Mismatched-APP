@@ -12,9 +12,9 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 avatar_map = {
-    "user": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/girl.png",
-    "Zwan": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/boy.png",
-    "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/boy.png",
+    "user": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/girl.png",
+    "Zwan": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/boy.png",
+    "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/boy.png",
 }
 
 for message in st.session_state.messages:
@@ -26,12 +26,12 @@ for message in st.session_state.messages:
             st.markdown(message["content"])
 
 if query:
-    with st.chat_message("user",avatar="https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/girl.png"):
+    with st.chat_message("user",avatar="https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/girl.png"):
         st.markdown(query)
     st.session_state.messages.append({"role":"user", "content":query})
 
     response, image = ask(query)
-    with st.chat_message("Zwan",avatar="https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/avatars/boy.png"):
+    with st.chat_message("Zwan",avatar="https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/boy.png"):
         st.markdown(response)
     st.image(image, width = 300)
     st.session_state.messages.append({"role": "assistant", "type": "image", "content": image})
