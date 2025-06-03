@@ -1,8 +1,12 @@
 streamlit
-chromadb
-python-dotenv
-pandas
 groq
+pandas
+chromadb==0.4.22
+langchain
+langchain_community
 sentence-transformers
+transformers
+semantic-router
+python-dotenv
+pysqlite3-binary
 protobuf==3.20.3
-numpy
