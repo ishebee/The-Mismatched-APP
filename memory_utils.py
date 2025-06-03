@@ -2,13 +2,14 @@
 import pandas as pd
 import chromadb
 from chromadb.utils import embedding_functions
+from chromadb.config import Settings
 from sentence_transformers import SentenceTransformer
 import os
 
 mem_path = "resources/Memories.csv"
 collection_name = "memories"
 
-chroma_client = chromadb.Client()
+chroma_client = chromadb.Client(Settings(chroma_api_impl="chromadb.api.local.LocalAPI"))
 ef = embedding_functions.SentenceTransformerEmbeddingFunction(
     model_name='sentence-transformers/all-MiniLM-L6-v2'
 )
