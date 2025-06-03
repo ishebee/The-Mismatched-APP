@@ -33,6 +33,7 @@ if query:
     response, image = ask(query)
     with st.chat_message("Zwan",avatar="https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/refs/heads/main/resources/avatars/boy.png"):
         st.markdown(response)
-    st.image(image, width = 300)
-    st.session_state.messages.append({"role": "assistant", "type": "image", "content": image})
+    if image:  # ✅ Prevent empty image crash
+        st.image(image, width=300)
+        st.session_state.messages.append({"role": "assistant", "type": "image", "content": image})
     st.session_state.messages.append({"role": "assistant", "content": response})
