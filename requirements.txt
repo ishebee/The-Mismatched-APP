@@ -1,9 +1,15 @@
 streamlit
 groq
 pandas
-chromadb==0.4.22
+chromadb
+langchain
+langchain_community
 sentence-transformers
 transformers
+semantic-router
 python-dotenv
+pysqlite3-binary
 protobuf==3.20.3
+opentelemetry-api==1.22.0
+opentelemetry-exporter-otlp==1.22.0
 numpy==1.23.5
