@@ -12,7 +12,7 @@ from chromadb.utils import embedding_functions
 
 collection_name = "memories"
 mem_path = "resources/Memories.csv"  # for sentence data
-paragraph_path = "resources/MemoriesPara.csv"  # for paragraph context
+paragraph_path = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcqUwnUPUyaXN4ZbrlUP9oRmz85k02nEH0PuS7D5sfjX5N6aPxCFYrxyWswhcNaZxmU9bJhKJUHv6u/pub?gid=0&single=true&output=csv"  # for paragraph context
 
 # Load paragraph DataFrame once and normalize Date
 paragraph_df = pd.read_csv(paragraph_path)
