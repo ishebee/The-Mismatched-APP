@@ -27,6 +27,7 @@ chroma_client = chromadb.Client()
 def ingest_memory_data():
     if collection_name not in [c.name for c in chroma_client.list_collections()]:
         df = create_sentence_df_from_paragraph()
+        print(df)
         collection = chroma_client.get_or_create_collection(
             name=collection_name,
             embedding_function=ef
