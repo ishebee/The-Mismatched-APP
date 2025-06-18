@@ -37,7 +37,7 @@ def get_image_from_df(date=None, metas=None):
 
     return image if image and image.startswith("http") else None
 
-def get_random_images():
+def get_random_images(): #to retrieve random image from the list if needed. 
     img_lst = paragraph_df["Image"].dropna().tolist()
     return random.choice(img_lst)
 
