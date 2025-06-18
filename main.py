@@ -69,13 +69,8 @@ if date_input and st.session_state["last_date"] != date_input:
 
 # 💬 Handle chat input
 if user_query:
-    st.session_state["messages"].append({"role": "user", "content": user_query})
-    response, image_url = ask_query(user_query)
-    st.session_state["messages"].append({"role": "Zwan", "content": response})
-    if image_url:
-        st.session_state["messages"].append({
-            "role": "assistant",
-            "type": "image",
-            "content": image_url
-        })
-    st.rerun()
+    if user_query:
+        st.session_state["messages"].append({"role": "user", "content": user_query})
+        response, _ = ask_query(user_query)  # Ignore image
+        st.session_state["messages"].append({"role": "Zwan", "content": response})
+        st.rerun()
