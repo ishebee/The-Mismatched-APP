@@ -11,7 +11,7 @@ import chromadb
 from chromadb.utils import embedding_functions
 
 collection_name = "memories"
-mem_path = "resources/Memories.csv"  # for sentence data
+#mem_path = "resources/Memories.csv"  # for sentence data
 paragraph_path = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcqUwnUPUyaXN4ZbrlUP9oRmz85k02nEH0PuS7D5sfjX5N6aPxCFYrxyWswhcNaZxmU9bJhKJUHv6u/pub?gid=0&single=true&output=csv"  # for paragraph context
 
 # Load paragraph DataFrame once and normalize Date
@@ -24,9 +24,9 @@ ef = embedding_functions.SentenceTransformerEmbeddingFunction(
 )
 chroma_client = chromadb.Client()
 
-def ingest_memory_data(path=mem_path):
+def ingest_memory_data():
     if collection_name not in [c.name for c in chroma_client.list_collections()]:
-        df = pd.read_csv(path)
+        df = create_sentence_df_from_paragraph()
         collection = chroma_client.get_or_create_collection(
             name=collection_name,
             embedding_function=ef
@@ -60,3 +60,21 @@ def get_context_from_df(date=None, metas=None):
     for _, row in df.iterrows():
         context += f" Date: {row['Date']}\n📝 Memory: {row['Memory']}\n📌 Event: {row['Event']}\n🏷️ Tag: {row['Tag']}\n\n"
     return context
+
+def create_sentence_df_from_paragraph(paragraph_path = paragraph_path): # Dynamically creates sentence df for chromadb semantic search purpose from default MemoriesPara.csv
+    paragraph_df = pd.read_csv(paragraph_path)
+    paragraph_df["Date"] = pd.to_datetime(paragraph_df["Date"], errors='coerce').dt.strftime("%m/%d/%Y")
+    paragraph_df.dropna(subset=["Memory"], inplace=True)
+
+    sentence_rows = []
+    for _, row in paragraph_df.iterrows():
+        sentences = [s.strip() for s in row["Memory"].split('.') if s.strip()]
+        for sentence in sentences:
+            sentence_rows.append({
+                "Memory": sentence,
+                "Date": row["Date"],
+                "Event": row["Event"],
+                "Tag": row["Tag"]
+            })
+
+    return pd.DataFrame(sentence_rows)
