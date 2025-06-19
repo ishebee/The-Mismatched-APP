@@ -65,7 +65,14 @@ def ask_by_date(date):
         August 2024    : 01, 03, 04, 08, 10, 14, 23, 27 & 29 -> 31\n
         September 2024 : 01, 06, 11, 12, 15 -> 18, 22 & 23\t
         October 2024   : 01 -> 07, 15, 19 & 31\n
-        Apart from choosing the above dates, if you remember any memory just say, I will check If I remember or not.
+        November 2024  : 11, 20 -> 26 & 30 \t
+        December 2024  : 05 -> 07, 12, 20 & 24 \n
+        January 2025   : 01, 07, 18 & 26\t
+        February 2025  : 04 & 12\n
+        March 2025     : 06 & 21\t
+        April 2025     : 10 & 27\t
+        May 2025       : 21\t
+        \nApart from choosing the above dates, if you remember any memory just say, I will check If I remember or not.
         Though here's for you the context of ur birthday journal to read. 
         """,  journal_image
 
