@@ -10,40 +10,26 @@ from memory import ask_query, ask_by_date
 from utils import get_image_from_df
 import datetime
 import pandas as pd
-import os
 import gspread
+import json
 from oauth2client.service_account import ServiceAccountCredentials
-from dotenv import load_dotenv
 
-load_dotenv()
+st.set_page_config(layout="centered")
+st.title("The Mismatched APP")
 
-# === Google Sheets setup ===
-scope = [
-    "https://spreadsheets.google.com/feeds",
-    "https://www.googleapis.com/auth/drive"
-]
-creds = ServiceAccountCredentials.from_json_keyfile_name(os.getenv("GOOGLE_CREDENTIALS_PATH"), scope)
+# ✅ Google Sheets Setup
+SHEET_ID = "your_actual_sheet_id_here"  # Hardcoded Sheet ID
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
+creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
-sheet = client.open_by_key(os.getenv("SHEET_ID")).sheet1
+sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
-# Load sheet data into DataFrame
+# Load sheet as DataFrame
 data = sheet.get_all_records()
 df = pd.DataFrame(data)
 
-st.set_page_config(layout="centered")
-st.markdown("""
-    <style>
-        .input-row {display: flex; flex-wrap: wrap; gap: 0.5rem;}
-        .input-row > div {flex-grow: 1;}
-        @media only screen and (max-width: 600px) {
-            .input-row {flex-direction: column;}
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-st.title("The Mismatched APP")
-
-# Session state initialization
+# Session state
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 if "last_date" not in st.session_state:
@@ -58,7 +44,7 @@ avatar_map = {
     "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
 }
 
-# Display messages
+# Show all previous messages
 for message in st.session_state["messages"]:
     role = message["role"]
     with st.chat_message(role, avatar=avatar_map.get(role)):
@@ -67,19 +53,38 @@ for message in st.session_state["messages"]:
         else:
             st.markdown(message["content"])
 
-# Input row: Chat + Date + Add button
-st.markdown('<div class="input-row">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns([6, 2, 1])
-with col1:
-    user_query = st.chat_input("Send a message")
-with col2:
-    date_input = st.date_input("📅", value=datetime.date(2024, 1, 11), label_visibility="collapsed")
-with col3:
-    if st.button("➕"):
-        st.session_state["show_add_form"] = not st.session_state["show_add_form"]
-st.markdown('</div>', unsafe_allow_html=True)
+# Chat input + Date + Add Memory in one row
+with st.container():
+    st.markdown("""
+        <style>
+        .input-row {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .input-row > div {
+            flex: 1;
+            min-width: 150px;
+        }
+        </style>
+        <div class="input-row">
+            <div id="chat_input"></div>
+            <div id="date_input"></div>
+            <div id="add_button"></div>
+        </div>
+    """, unsafe_allow_html=True)
 
-# Add memory form
+    col1, col2, col3 = st.columns([5, 2, 1])
+    with col1:
+        user_query = st.chat_input("Send a message", key="chat_input_box")
+    with col2:
+        date_input = st.date_input("📅", value=datetime.date(2024, 1, 11), label_visibility="collapsed", key="date_input_box")
+    with col3:
+        if st.button("➕", key="add_btn"):
+            st.session_state["show_add_form"] = not st.session_state["show_add_form"]
+
+# Show memory add form
 if st.session_state["show_add_form"]:
     with st.form("add_memory_form"):
         new_memory = st.text_area("Memory", placeholder="Write your memory here")
@@ -91,31 +96,37 @@ if st.session_state["show_add_form"]:
 
         if submitted:
             new_date_str = f"{new_date.month}/{new_date.day}/{new_date.year}"  # M/D/YYYY
-            records = sheet.get_all_records()
-            match_found = False
 
-            for i, row in enumerate(records):
-                if (
-                    row["Date"] == new_date_str
-                    and row["Event"] == new_event
-                    and row["Tag"] == new_tag
-                ):
-                    new_mem = row["Memory"] + " " + new_memory
-                    new_img = new_image or row.get("Image", "")
-                    sheet.update_cell(i+2, 1, new_mem)  # A: Memory
-                    sheet.update_cell(i+2, 5, new_img)  # E: Image
-                    match_found = True
-                    break
+            # Update or append row in DataFrame
+            mask = (
+                (df["Date"] == new_date_str)
+                & (df["Event"] == new_event)
+                & (df["Tag"] == new_tag)
+            )
 
-            if not match_found:
-                new_row = [new_memory, new_date_str, new_event, new_tag, new_image or ""]
-                sheet.append_row(new_row)
+            if mask.any():
+                df.loc[mask, "Memory"] += f" {new_memory}"
+                if new_image:
+                    df.loc[mask, "Image"] = new_image
+            else:
+                new_row = {
+                    "Memory": new_memory,
+                    "Date": new_date_str,
+                    "Event": new_event,
+                    "Tag": new_tag,
+                    "Image": new_image or ""
+                }
+                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+
+            # Upload new df to Google Sheets
+            sheet.clear()
+            sheet.update([df.columns.values.tolist()] + df.values.tolist())
 
             st.session_state["show_add_form"] = False
             st.success("Memory added/updated successfully!")
             st.rerun()
 
-# Handle date selection
+# Handle date-based question
 if date_input and st.session_state["last_date"] != date_input:
     st.session_state["last_date"] = date_input
     formatted_date = f"{date_input.month}/{date_input.day}/{date_input.year}"
