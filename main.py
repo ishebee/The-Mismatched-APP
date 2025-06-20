@@ -21,9 +21,14 @@ st.title("The Mismatched APP")
 
 # ✅ Google Sheets Setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+# Load service account JSON from st.secrets
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 client = gspread.authorize(creds)
+
+# 🔐 Hardcoded Sheet ID
 sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
 # ✅ Helper to reload sheet
