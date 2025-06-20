@@ -2,16 +2,15 @@ import sys
 import os
 try:
     import pysqlite3
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")  # Force updated SQLite
 except ImportError:
-    print("⚠️ pysqlite3-binary is missing. Install it using `pip install pysqlite3-binary`.")
-
+    print("⚠️ pysqlite3-binary is missing. Install it using pip install pysqlite3-binary.")
 import streamlit as st
 from memory import ask_query, ask_by_date
 from utils import get_image_from_df
-from memory_utils import ingest_memory_data  # ✅ Added
 import datetime
 import pandas as pd
+import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
@@ -22,9 +21,14 @@ st.title("The Mismatched APP")
 
 # ✅ Google Sheets Setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+
+# Load service account JSON from st.secrets
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
+
 client = gspread.authorize(creds)
+
+# 🔐 Hardcoded Sheet ID
 sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
 # ✅ Helper to reload sheet
@@ -81,39 +85,23 @@ if st.session_state["show_add_form"]:
             existing = sheet.get_all_records()
             df = pd.DataFrame(existing)
 
-            # Check for existing match
-            mask = (
-                (df["Date"] == new_date_str)
-                & (df["Event"] == new_event)
-                & (df["Tag"] == new_tag)
-            )
-
-            if mask.any():
-                idx = df[mask].index[0]
-                df.at[idx, "Memory"] += f" {new_memory}"
-                if new_image:
-                    df.at[idx, "Image"] = new_image
-            else:
-                new_row = {
+            new_row = {
                     "Memory": new_memory,
                     "Date": new_date_str,
                     "Event": new_event,
                     "Tag": new_tag,
                     "Image": new_image or ""
                 }
-                df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
+            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
 
             # Overwrite Sheet
             sheet.clear()
             sheet.update([df.columns.values.tolist()] + df.values.tolist())
 
-            # 🆕 Re-ingest updated memory data into ChromaDB
-            ingest_memory_data()
-
             st.success("Memory added/updated successfully!")
             st.session_state["show_add_form"] = False
 
-            # 🔄 Reload sheet and rerun app
+            # 🔄 Reload sheet
             load_sheet_data()
             st.rerun()
 
