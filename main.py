@@ -60,27 +60,7 @@ for message in st.session_state["messages"]:
             st.markdown(message["content"])
 
 # ✅ Input Row (Chat + Date + + Button)
-with st.container():
-    st.markdown("""
-        <style>
-        .input-row {
-            display: flex;
-            flex-direction: row;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        .input-row > div {
-            flex: 1;
-            min-width: 150px;
-        }
-        </style>
-        <div class="input-row">
-            <div id="chat_input"></div>
-            <div id="date_input"></div>
-            <div id="add_button"></div>
-        </div>
-    """, unsafe_allow_html=True)
-    
+with st.container():    
     col1, col2, col3 = st.columns([5, 2, 1])
     with col1:
         user_query = st.chat_input("Send a message")
