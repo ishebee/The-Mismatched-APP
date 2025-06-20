@@ -24,7 +24,7 @@ scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/au
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
-sheet = client.open_by_key(st.secrets["SHEET_ID"]).sheet1
+sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
 # ✅ Helper to reload sheet
 def load_sheet_data():
