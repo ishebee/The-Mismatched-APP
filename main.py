@@ -2,15 +2,16 @@ import sys
 import os
 try:
     import pysqlite3
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")  # Force updated SQLite
+    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")
 except ImportError:
     print("⚠️ pysqlite3-binary is missing. Install it using `pip install pysqlite3-binary`.")
+
 import streamlit as st
 from memory import ask_query, ask_by_date
 from utils import get_image_from_df
+from memory_utils import ingest_memory_data  # ✅ Added
 import datetime
 import pandas as pd
-import os
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 import json
@@ -21,14 +22,9 @@ st.title("The Mismatched APP")
 
 # ✅ Google Sheets Setup
 scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-
-# Load service account JSON from st.secrets
 creds_dict = json.loads(st.secrets["GOOGLE_CREDENTIALS"])
 creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-
 client = gspread.authorize(creds)
-
-# 🔐 Hardcoded Sheet ID
 sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
 # ✅ Helper to reload sheet
@@ -111,10 +107,13 @@ if st.session_state["show_add_form"]:
             sheet.clear()
             sheet.update([df.columns.values.tolist()] + df.values.tolist())
 
+            # 🆕 Re-ingest updated memory data into ChromaDB
+            ingest_memory_data()
+
             st.success("Memory added/updated successfully!")
             st.session_state["show_add_form"] = False
 
-            # 🔄 Reload sheet
+            # 🔄 Reload sheet and rerun app
             load_sheet_data()
             st.rerun()
 
