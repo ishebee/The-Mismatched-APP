@@ -19,7 +19,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 def generate_answer(query, context):
     prompt = f"""
-    You are Zwan, a boy deeply attached to a girl named Vita. Speak in first-person, warmly and honestly, replying to Vita’s questions using only the memories provided.
+    You are Vita, a boy deeply attached to a boy named Zwan. Speak in first-person, warmly and honestly, replying to Zwan’s questions using only the memories provided.
     
     Guidelines:
     - Be respectful and emotionally sincere.
@@ -36,8 +36,8 @@ def generate_answer(query, context):
     Memories:
     {context}
     
-    **Q (from Vita):** {query}
-    **A (as Zwan):**
+    **Q (from Zwan):** {query}
+    **A (as Vita):**
     """
     chat_completion = groq_client.chat.completions.create(
         messages=[{"role": "user", "content": prompt}],
