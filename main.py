@@ -45,9 +45,10 @@ if "show_add_form" not in st.session_state:
 
 # 📦 Avatars
 avatar_map = {
-    "user": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
+    "user": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
     "Zwan": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
-    "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
+    "Vita" : "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
+    "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
 }
 
 # ✅ Display messages
@@ -114,7 +115,7 @@ if date_input and st.session_state["last_date"] != date_input:
     st.session_state["messages"].append({"role": "user", "content": date_prompt})
 
     response, image_url = ask_by_date(formatted_date)
-    st.session_state["messages"].append({"role": "Zwan", "content": response})
+    st.session_state["messages"].append({"role": "Vita", "content": response})
     if image_url:
         st.session_state["messages"].append({
             "role": "assistant",
@@ -127,5 +128,5 @@ if date_input and st.session_state["last_date"] != date_input:
 if user_query:
     st.session_state["messages"].append({"role": "user", "content": user_query})
     response, image_url = ask_query(user_query)
-    st.session_state["messages"].append({"role": "Zwan", "content": response})
+    st.session_state["messages"].append({"role": "Vita", "content": response})
     st.rerun()
