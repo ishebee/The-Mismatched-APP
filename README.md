@@ -41,9 +41,6 @@ In this project:
 - **LangChain** powers the pipeline for context-aware response generation.
 - Google Sheets serves as the external “memory base” from which records are pulled and embedded.
 
-![RAG Flow Diagram](https://github.com/yourname/yourrepo/assets/rag-diagram.png) *(Replace with your local image or a diagram)*
-
----
 
 ## 🛠 Tech Stack
 
