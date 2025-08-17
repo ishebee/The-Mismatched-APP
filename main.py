@@ -29,8 +29,7 @@ creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
 client = gspread.authorize(creds)
 
 # 🔐 Hardcoded Sheet ID
-#sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
-sheet = https://docs.google.com/spreadsheets/d/e/2PACX-1vTcqUwnUPUyaXN4ZbrlUP9oRmz85k02nEH0PuS7D5sfjX5N6aPxCFYrxyWswhcNaZxmU9bJhKJUHv6u/pubhtml?gid=0&single=true
+sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
 
 # ✅ Helper to reload sheet
 def load_sheet_data():
