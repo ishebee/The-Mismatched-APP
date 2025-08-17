@@ -51,13 +51,6 @@ with st.container():
         user_query = st.chat_input("Send a message")
     with col2:
         date_input = st.date_input("📅", value=datetime.date(2024, 1, 11), label_visibility="collapsed")
-    with col3:
-        if st.button("➕", use_container_width=True):
-            st.session_state["show_add_form"] = not st.session_state["show_add_form"]
-
-# 🚫 WRITE DISABLED: Published sheets are read-only!
-if st.session_state["show_add_form"]:
-    st.warning("This sheet is published as read-only. To enable writing, use Google Sheets API with authentication.")
 
 # ✅ Handle date selection
 if date_input and st.session_state["last_date"] != date_input:
