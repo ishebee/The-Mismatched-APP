@@ -1,39 +1,23 @@
 import sys
 import os
-try:
-    import pysqlite3
-    sys.modules["sqlite3"] = sys.modules.pop("pysqlite3")  # Force updated SQLite
-except ImportError:
-    print("⚠️ pysqlite3-binary is missing. Install it using pip install pysqlite3-binary.")
 import streamlit as st
 from memory import ask_query, ask_by_date
 from utils import get_image_from_df
 import datetime
 import pandas as pd
-import os
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-import json
 
 # --- Setup ---
 st.set_page_config(layout="centered")
 st.title("The Mismatched APP")
 
-# ✅ Google Sheets Setup
-scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+# ✅ Load Google Sheet as CSV (published version)
+csv_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcqUwnUPUyaXN4ZbrlUP9oRmz85k02nEH0PuS7D5sfjX5N6aPxCFYrxyWswhcNaZxmU9bJhKJUHv6u/pub?gid=0&single=true&output=csv"
 
-# Load service account JSON from st.secrets
-creds_dict = st.secrets["GOOGLE_CREDENTIALS"]
-creds = ServiceAccountCredentials.from_json_keyfile_dict(creds_dict, scope)
-
-client = gspread.authorize(creds)
-
-# 🔐 Hardcoded Sheet ID
-sheet = client.open_by_key("1uCozg_MtU2UllwZa4VXidADeUS-TbV4RZ38VYfbddII").sheet1
-
-# ✅ Helper to reload sheet
+@st.cache_data(show_spinner=False)
 def load_sheet_data():
-    return sheet.get_all_records()
+    return pd.read_csv(csv_url)
+
+df = load_sheet_data()
 
 # ✅ Session state
 if "messages" not in st.session_state:
@@ -47,7 +31,7 @@ if "show_add_form" not in st.session_state:
 avatar_map = {
     "user": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
     "Zwan": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/boy.png",
-    "Vita" : "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
+    "Vita": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
     "assistant": "https://raw.githubusercontent.com/ishebee/The-Mismatched-APP/main/resources/avatars/girl.png",
 }
 
@@ -61,7 +45,7 @@ for message in st.session_state["messages"]:
             st.markdown(message["content"])
 
 # ✅ Input Row (Chat + Date + + Button)
-with st.container():    
+with st.container():
     col1, col2, col3 = st.columns([5, 2, 1])
     with col1:
         user_query = st.chat_input("Send a message")
@@ -71,40 +55,9 @@ with st.container():
         if st.button("➕", use_container_width=True):
             st.session_state["show_add_form"] = not st.session_state["show_add_form"]
 
-# ✅ Memory Form
+# 🚫 WRITE DISABLED: Published sheets are read-only!
 if st.session_state["show_add_form"]:
-    with st.form("add_memory_form"):
-        new_memory = st.text_area("Memory", placeholder="Write your memory here")
-        new_date = st.date_input("Date", value=datetime.date.today())
-        new_event = st.text_input("Event", placeholder="Birthday, Trip, etc.")
-        new_tag = st.text_input("Tag", placeholder="Love, Fun, Sadness, etc.")
-        new_image = st.text_input("Image URL (optional)")
-        submitted = st.form_submit_button("Submit")
-
-        if submitted:
-            new_date_str = f"{new_date.month}/{new_date.day}/{new_date.year}"  # M/D/YYYY
-            existing = sheet.get_all_records()
-            df = pd.DataFrame(existing)
-
-            new_row = {
-                    "Memory": new_memory,
-                    "Date": new_date_str,
-                    "Event": new_event,
-                    "Tag": new_tag,
-                    "Image": new_image or ""
-                }
-            df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
-
-            # Overwrite Sheet
-            sheet.clear()
-            sheet.update([df.columns.values.tolist()] + df.values.tolist())
-
-            st.success("Memory added/updated successfully!")
-            st.session_state["show_add_form"] = False
-
-            # 🔄 Reload sheet
-            load_sheet_data()
-            st.rerun()
+    st.warning("This sheet is published as read-only. To enable writing, use Google Sheets API with authentication.")
 
 # ✅ Handle date selection
 if date_input and st.session_state["last_date"] != date_input:
